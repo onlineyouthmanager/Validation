@@ -40,7 +40,7 @@ class CreditCard extends AbstractRule
     ];
 
     /**
-     * @param string $brand Optional credit card brand.
+     * @param string $brand Optional credit card brand
      */
     public function __construct($brand = null)
     {
@@ -82,8 +82,8 @@ class CreditCard extends AbstractRule
     {
         $sum = 0;
         $input = strrev($input);
-        for ($i = 0; $i < strlen($input); ++$i) {
-            $current = substr($input, $i, 1);
+        for ($i = 0; $i < mb_strlen($input); ++$i) {
+            $current = mb_substr($input, $i, 1);
             if ($i % 2 == 1) {
                 $current *= 2;
                 if ($current > 9) {
