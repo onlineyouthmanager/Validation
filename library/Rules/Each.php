@@ -25,6 +25,19 @@ class Each extends IterableType
         $this->keyValidator = $keyValidator;
     }
 
+    public function setName($name)
+    {
+        if($this->itemValidator !== null) {
+            $this->itemValidator->setName($name);
+        }
+
+        if($this->keyValidator !== null) {
+            $this->keyValidator->setName($name);
+        }
+
+        return parent::setName($name);
+    }
+
     public function assert($input)
     {
         $exceptions = [];
