@@ -12,16 +12,17 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=7.0",
         "symfony/polyfill-mbstring": "^1.2"
     },
     "require-dev": {
-        "egulias/email-validator": "~1.2",
-        "malkusch/bav": "~1.0",
-        "mikey179/vfsStream": "^1.5",
-        "phpunit/phpunit": "~4.0",
-        "symfony/validator": "~2.6.9",
-        "zendframework/zend-validator": "~2.3"
+        "egulias/email-validator": "^2.0",
+        "malkusch/bav": "^1.1",
+        "malukenho/docheader": "^0.1.4",
+        "mikey179/vfsStream": "^1.6",
+        "phpunit/phpunit": "^5.6",
+        "symfony/validator": "^3.0",
+        "zendframework/zend-validator": "^2.0"
     },
     "suggest": {
         "ext-bcmath": "Arbitrary Precision Mathematics",
@@ -44,7 +45,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.1-dev"
+            "dev-master": "2.0-dev"
         }
     },
     "scripts": {
