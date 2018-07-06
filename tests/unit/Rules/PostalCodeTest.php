@@ -87,6 +87,8 @@ class PostalCodeTest extends TestCase
             ['US', '02179'],
             ['YE', ''],
             ['PL', '99-300'],
+            ['NL', '1012 GX'],
+            ['NL', '1012GX'],
         ];
     }
 

@@ -81,7 +81,8 @@ class AlnumTest extends TestCase
     {
         return [
             ['alganet', ''],
-            ['alganet', 'alganet'],
+            ['foo :- 123 !', '- ! :'],
+            ['number 100%', '%'],
             ['0alg-anet0', '0-9'],
             ['1', ''],
             ["\t", ''],
@@ -102,6 +103,7 @@ class AlnumTest extends TestCase
     {
         return [
             ['', ''],
+            ['number 100%', ''],
             ['@#$', ''],
             ['_', ''],
             ['dgç', ''],
