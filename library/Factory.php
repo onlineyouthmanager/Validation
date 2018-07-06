@@ -191,28 +191,20 @@ final class Factory
         // once again.
         static $reflections = array();
 
-        foreach ($this->rulesNamespaces as $prefix) {
-            $className = $prefix . ucfirst($name);
-
-            if (isset($reflections[$className]) === true) {
-                return $reflections[$className];
-            }
-
-            if (!class_exists($className)) {
-                continue;
-            }
-
-            $reflection = new ReflectionClass($name);
-            if (!$reflection->isSubclassOf($parentName) && $parentName !== $name) {
-                throw new InvalidClassException(sprintf('"%s" must be an instance of "%s"', $name, $parentName));
-            }
-
-            if (!$reflection->isInstantiable()) {
-                throw new InvalidClassException(sprintf('"%s" must be instantiable', $name));
-            }
-
-            return $reflections[$className] = $reflection;
+        if (isset($reflections[$name]) === true) {
+            return $reflections[$name];
         }
+
+        $reflection = new ReflectionClass($name);
+        if (!$reflection->isSubclassOf($parentName) && $parentName !== $name) {
+            throw new InvalidClassException(sprintf('"%s" must be an instance of "%s"', $name, $parentName));
+        }
+
+        if (!$reflection->isInstantiable()) {
+            throw new InvalidClassException(sprintf('"%s" must be instantiable', $name));
+        }
+
+        return $reflections[$name] = $reflection;
     }
 
     /**
