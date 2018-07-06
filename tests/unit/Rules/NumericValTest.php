@@ -9,18 +9,22 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group  rule
- * @covers Respect\Validation\Rules\NumericVal
- * @covers Respect\Validation\Exceptions\NumericValException
+ * @covers \Respect\Validation\Rules\NumericVal
+ * @covers \Respect\Validation\Exceptions\NumericValException
  */
-class NumericValTest extends \PHPUnit_Framework_TestCase
+class NumericValTest extends TestCase
 {
     protected $object;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->object = new NumericVal();
     }
@@ -28,21 +32,21 @@ class NumericValTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerForNumeric
      */
-    public function testNumeric($input)
+    public function testNumeric($input): void
     {
-        $this->assertTrue($this->object->__invoke($input));
-        $this->assertTrue($this->object->check($input));
-        $this->assertTrue($this->object->assert($input));
+        self::assertTrue($this->object->__invoke($input));
+        $this->object->check($input);
+        $this->object->assert($input);
     }
 
     /**
      * @dataProvider providerForNotNumeric
-     * @expectedException Respect\Validation\Exceptions\NumericValException
+     * @expectedException \Respect\Validation\Exceptions\NumericValException
      */
-    public function testNotNumeric($input)
+    public function testNotNumeric($input): void
     {
-        $this->assertFalse($this->object->__invoke($input));
-        $this->assertFalse($this->object->assert($input));
+        self::assertFalse($this->object->__invoke($input));
+        $this->object->assert($input);
     }
 
     public function providerForNumeric()

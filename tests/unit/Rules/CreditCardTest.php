@@ -9,41 +9,42 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use Respect\Validation\Exceptions\ComponentException;
+use Respect\Validation\Test\RuleTestCase;
 
 /**
- * @group  rule
- * @covers Respect\Validation\Rules\CreditCard
+ * @group rule
+ *
+ * @covers \Respect\Validation\Rules\CreditCard
+ *
+ * @author Andy Snell <andysnell@gmail.com>
+ * @author Henrique Moody <henriquemoody@gmail.com>
+ * @author Jean Pimentel <jeanfap@gmail.com>
+ * @author William Espindola <oi@williamespindola.com.br>
  */
-class CreditCardTest extends RuleTestCase
+final class CreditCardTest extends RuleTestCase
 {
-    public function testShouldHaveNoCreditCardBrandByDefault()
-    {
-        $rule = new CreditCard();
-
-        $this->assertNull($rule->brand);
-    }
-
-    public function testShouldAcceptCreditCardBrandOnConstructor()
-    {
-        $rule = new CreditCard(CreditCard::VISA);
-
-        $this->assertSame(CreditCard::VISA, $rule->brand);
-    }
-
-    public function testShouldThrowExceptionWhenCreditCardBrandIsNotValid()
+    /**
+     * @test
+     */
+    public function itShouldThrowExceptionWhenCreditCardBrandIsNotValid(): void
     {
         $message = '"RespectCard" is not a valid credit card brand';
-        $message .= ' (Available: American Express, Diners Club, Discover, JCB, MasterCard, Visa).';
+        $message .= ' (Available: Any, American Express, Diners Club, Discover, JCB, MasterCard, Visa)';
 
-        $this->setExpectedException(ComponentException::class, $message);
+        $this->expectException(ComponentException::class, $message);
 
         new CreditCard('RespectCard');
     }
 
-    public function providerForValidInput()
+    /**
+     * {@inheritdoc}
+     */
+    public function providerForValidInput(): array
     {
         $general = new CreditCard();
         $amex = new CreditCard(CreditCard::AMERICAN_EXPRESS);
@@ -54,6 +55,7 @@ class CreditCardTest extends RuleTestCase
         $visa = new CreditCard(CreditCard::VISA);
 
         return [
+            [$general, 5555444433331111], // MasterCard 5 BIN Range
             [$general, '5376 7473 9720 8720'], // MasterCard 5 BIN Range
             [$master, '5376 7473 9720 8720'],
             [$general, '2223000048400011'], // MasterCard 2 BIN Range
@@ -73,7 +75,10 @@ class CreditCardTest extends RuleTestCase
         ];
     }
 
-    public function providerForInvalidInput()
+    /**
+     * {@inheritdoc}
+     */
+    public function providerForInvalidInput(): array
     {
         $general = new CreditCard();
         $amex = new CreditCard(CreditCard::AMERICAN_EXPRESS);

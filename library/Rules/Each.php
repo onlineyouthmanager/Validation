@@ -9,101 +9,73 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use Respect\Validation\Exceptions\ValidationException;
+use Respect\Validation\Helpers\CanValidateIterable;
 use Respect\Validation\Validatable;
 
-class Each extends IterableType
+/**
+ * Validates whether each value in the input is valid according to another rule.
+ *
+ * @author Alexandre Gomes Gaigalas <alexandre@gaigalas.net>
+ * @author Henrique Moody <henriquemoody@gmail.com>
+ * @author Nick Lombard <github@jigsoft.co.za>
+ * @author William Espindola <oi@williamespindola.com.br>
+ */
+final class Each extends AbstractRule
 {
-    public $itemValidator;
-    public $keyValidator;
+    use CanValidateIterable;
 
-    public function __construct(Validatable $itemValidator = null, Validatable $keyValidator = null)
+    /**
+     * @var Validatable
+     */
+    private $rule;
+
+    /**
+     * Initializes the constructor.
+     *
+     * @param mixed $rule
+     */
+    public function __construct(Validatable $rule)
     {
-        $this->itemValidator = $itemValidator;
-        $this->keyValidator = $keyValidator;
+        $this->rule = $rule;
     }
 
-    public function setName($name)
+    /**
+     * {@inheritdoc}
+     */
+    public function assert($input): void
     {
-        if($this->itemValidator !== null) {
-            $this->itemValidator->setName($name);
-        }
-
-        if($this->keyValidator !== null) {
-            $this->keyValidator->setName($name);
-        }
-
-        return parent::setName($name);
-    }
-
-    public function assert($input)
-    {
-        $exceptions = [];
-
-        if (!parent::validate($input)) {
+        if (!$this->isIterable($input)) {
             throw $this->reportError($input);
         }
 
-        foreach ($input as $key => $item) {
-            if (isset($this->itemValidator)) {
-                try {
-                    $this->itemValidator->assert($item);
-                } catch (ValidationException $e) {
-                    $exceptions[] = $e;
-                }
-            }
-
-            if (isset($this->keyValidator)) {
-                try {
-                    $this->keyValidator->assert($key);
-                } catch (ValidationException $e) {
-                    $exceptions[] = $e;
-                }
+        $exceptions = [];
+        foreach ($input as $value) {
+            try {
+                $this->rule->check($value);
+            } catch (ValidationException $exception) {
+                $exceptions[] = $exception;
             }
         }
 
         if (!empty($exceptions)) {
             throw $this->reportError($input)->setRelated($exceptions);
         }
-
-        return true;
     }
 
-    public function check($input)
+    /**
+     * {@inheritdoc}
+     */
+    public function validate($input): bool
     {
-        if (!parent::validate($input)) {
-            throw $this->reportError($input);
-        }
-
-        foreach ($input as $key => $item) {
-            if (isset($this->itemValidator)) {
-                $this->itemValidator->check($item);
-            }
-
-            if (isset($this->keyValidator)) {
-                $this->keyValidator->check($key);
-            }
-        }
-
-        return true;
-    }
-
-    public function validate($input)
-    {
-        if (!parent::validate($input)) {
+        try {
+            $this->assert($input);
+        } catch (ValidationException $exception) {
             return false;
-        }
-
-        foreach ($input as $key => $item) {
-            if (isset($this->itemValidator) && !$this->itemValidator->validate($item)) {
-                return false;
-            }
-
-            if (isset($this->keyValidator) && !$this->keyValidator->validate($key)) {
-                return false;
-            }
         }
 
         return true;

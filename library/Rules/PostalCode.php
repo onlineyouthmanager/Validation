@@ -9,16 +9,18 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use Respect\Validation\Exceptions\ComponentException;
 
 class PostalCode extends Regex
 {
-    const DEFAULT_PATTERN = '/^$/';
+    public const DEFAULT_PATTERN = '/^$/';
 
     /**
-     * @link http://download.geonames.org/export/dump/countryInfo.txt
+     * @see http://download.geonames.org/export/dump/countryInfo.txt
      */
     public $postalCodes = [
         'AD' => "/^(?:AD)*(\d{3})$/",
@@ -43,7 +45,7 @@ class PostalCode extends Regex
         'CL' => "/^(\d{7})$/",
         'CN' => "/^(\d{6})$/",
         'CR' => "/^(\d{4})$/",
-        'CS' => "/^(\d{5})$/",
+        'CS' => "/^((\d{5})|(\d{3}\040\d{2}))$/",
         'CU' => "/^(?:CP)*(\d{5})$/",
         'CV' => "/^(\d{4})$/",
         'CX' => "/^(\d{4})$/",
@@ -147,7 +149,7 @@ class PostalCode extends Regex
         'SG' => "/^(\d{6})$/",
         'SH' => '/^(STHL1ZZ)$/',
         'SI' => "/^(?:SI)*(\d{4})$/",
-        'SK' => "/^(\d{5})$/",
+        'SK' => "/^((\d{5})|(\d{3}\040\d{2}))$/",
         'SM' => "/^(4789\d)$/",
         'SN' => "/^(\d{5})$/",
         'SO' => "/^([A-Z]{2}\d{5})$/",

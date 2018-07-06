@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use Respect\Validation\Exceptions\ComponentException;
@@ -17,6 +19,7 @@ class Ip extends AbstractRule
 {
     public $ipOptions;
 
+    public $range;
     public $networkRange;
 
     public function __construct($ipOptions = null)
@@ -28,22 +31,44 @@ class Ip extends AbstractRule
         }
 
         $this->networkRange = $this->parseRange($ipOptions);
+        $this->range = $this->createRange();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createRange(): ?string
+    {
+        if (!$this->networkRange) {
+            return null;
+        }
+
+        $range = $this->networkRange;
+        $message = $range['min'];
+
+        if (isset($range['max'])) {
+            $message .= '-'.$range['max'];
+        } else {
+            $message .= '/'.long2ip((int) $range['mask']);
+        }
+
+        return $message;
     }
 
     protected function parseRange($input)
     {
-        if ($input === null || $input == '*' || $input == '*.*.*.*'
-            || $input == '0.0.0.0-255.255.255.255') {
+        if (null === $input || '*' == $input || '*.*.*.*' == $input
+            || '0.0.0.0-255.255.255.255' == $input) {
             return;
         }
 
         $range = ['min' => null, 'max' => null, 'mask' => null];
 
-        if (mb_strpos($input, '-') !== false) {
+        if (false !== mb_strpos($input, '-')) {
             list($range['min'], $range['max']) = explode('-', $input);
-        } elseif (mb_strpos($input, '*') !== false) {
+        } elseif (false !== mb_strpos($input, '*')) {
             $this->parseRangeUsingWildcards($input, $range);
-        } elseif (mb_strpos($input, '/') !== false) {
+        } elseif (false !== mb_strpos($input, '/')) {
             $this->parseRangeUsingCidr($input, $range);
         } else {
             throw new ComponentException('Invalid network range');
@@ -60,14 +85,14 @@ class Ip extends AbstractRule
         return $range;
     }
 
-    protected function fillAddress(&$input, $char = '*')
+    protected function fillAddress(&$input, $char = '*'): void
     {
         while (mb_substr_count($input, '.') < 3) {
             $input .= '.'.$char;
         }
     }
 
-    protected function parseRangeUsingWildcards($input, &$range)
+    protected function parseRangeUsingWildcards($input, &$range): void
     {
         $this->fillAddress($input);
 
@@ -75,13 +100,13 @@ class Ip extends AbstractRule
         $range['max'] = str_replace('*', '255', $input);
     }
 
-    protected function parseRangeUsingCidr($input, &$range)
+    protected function parseRangeUsingCidr($input, &$range): void
     {
         $input = explode('/', $input);
         $this->fillAddress($input[0], '0');
 
         $range['min'] = $input[0];
-        $isAddressMask = mb_strpos($input[1], '.') !== false;
+        $isAddressMask = false !== mb_strpos($input[1], '.');
 
         if ($isAddressMask && $this->verifyAddress($input[1])) {
             $range['mask'] = sprintf('%032b', ip2long($input[1]));
@@ -93,10 +118,10 @@ class Ip extends AbstractRule
             throw new ComponentException('Invalid network mask');
         }
 
-        $range['mask'] = sprintf('%032b', ip2long(long2ip(~(pow(2, (32 - $input[1])) - 1))));
+        $range['mask'] = sprintf('%032b', ip2long(long2ip(~(2 ** (32 - $input[1]) - 1))));
     }
 
-    public function validate($input)
+    public function validate($input): bool
     {
         return $this->verifyAddress($input) && $this->verifyNetwork($input);
     }
@@ -114,7 +139,7 @@ class Ip extends AbstractRule
 
     protected function verifyNetwork($input)
     {
-        if ($this->networkRange === null) {
+        if (null === $this->networkRange) {
             return true;
         }
 

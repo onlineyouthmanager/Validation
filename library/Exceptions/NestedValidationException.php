@@ -9,11 +9,15 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 use IteratorAggregate;
 use RecursiveIteratorIterator;
 use SplObjectStorage;
+use function count;
+use function is_array;
 
 class NestedValidationException extends ValidationException implements IteratorAggregate
 {
@@ -35,80 +39,6 @@ class NestedValidationException extends ValidationException implements IteratorA
     }
 
     /**
-     * @param string              $path
-     * @param ValidationException $exception
-     *
-     * @return ValidationException
-     */
-    private function getExceptionForPath($path, ValidationException $exception)
-    {
-        if ($path === $exception->guessId()) {
-            return $exception;
-        }
-
-        if (!$exception instanceof self) {
-            return $exception;
-        }
-
-        foreach ($exception as $subException) {
-            return $subException;
-        }
-
-        return $exception;
-    }
-
-    /**
-     * @param array $paths
-     *
-     * @return self
-     */
-    public function findMessages(array $paths)
-    {
-        $messages = [];
-
-        foreach ($paths as $key => $value) {
-            $numericKey = is_numeric($key);
-            $path = $numericKey ? $value : $key;
-
-            if (!($exception = $this->getRelatedByName($path))) {
-                $exception = $this->findRelated($path);
-            }
-
-            $path = str_replace('.', '_', $path);
-
-            if (!$exception) {
-                $messages[$path] = '';
-                continue;
-            }
-
-            $exception = $this->getExceptionForPath($path, $exception);
-            if (!$numericKey) {
-                $exception->setTemplate($value);
-            }
-
-            $messages[$path] = $exception->getMainMessage();
-        }
-
-        return $messages;
-    }
-
-    /**
-     * @return Exception
-     */
-    public function findRelated($path)
-    {
-        $target = $this;
-        $pieces = explode('.', $path);
-
-        while (!empty($pieces) && $target) {
-            $piece = array_shift($pieces);
-            $target = $target->getRelatedByName($piece);
-        }
-
-        return $target;
-    }
-
-    /**
      * @return RecursiveIteratorIterator
      */
     private function getRecursiveIterator()
@@ -120,6 +50,26 @@ class NestedValidationException extends ValidationException implements IteratorA
         );
 
         return $recursiveIteratorIterator;
+    }
+
+    /**
+     * Returns weather an exception should be omitted or not.
+     *
+     * @param Exception $exception
+     *
+     * @return bool
+     */
+    private function isOmissible(Exception $exception)
+    {
+        if (!$exception instanceof self) {
+            return false;
+        }
+
+        $relatedExceptions = $exception->getRelated();
+        $relatedExceptions->rewind();
+        $childException = $relatedExceptions->current();
+
+        return 1 === $relatedExceptions->count() && !$childException instanceof NonOmissibleException;
     }
 
     /**
@@ -136,9 +86,7 @@ class NestedValidationException extends ValidationException implements IteratorA
         $lastDepthOriginal = 0;
         $knownDepths = [];
         foreach ($recursiveIteratorIterator as $childException) {
-            if ($childException instanceof self
-                && $childException->getRelated()->count() > 0
-                && $childException->getRelated()->count() < 2) {
+            if ($this->isOmissible($childException)) {
                 continue;
             }
 
@@ -148,7 +96,7 @@ class NestedValidationException extends ValidationException implements IteratorA
             if (isset($knownDepths[$currentDepthOriginal])) {
                 $currentDepth = $knownDepths[$currentDepthOriginal];
             } elseif ($currentDepthOriginal > $lastDepthOriginal
-                && ($this->hasCustomTemplate() || $exceptionIterator->count() != 1)) {
+                && ($this->hasCustomTemplate() || 1 != $exceptionIterator->count())) {
                 ++$currentDepth;
             }
 
@@ -173,18 +121,29 @@ class NestedValidationException extends ValidationException implements IteratorA
         return $childrenExceptions;
     }
 
-    /**
-     * @return array
-     */
-    public function getMessages()
+    public function getMessages(array $templates = []): array
     {
-        $messages = [$this->getMessage()];
-        foreach ($this as $exception) {
-            $messages[] = $exception->getMessage();
+        $messages = [$this->getId() => $this->renderMessage($this, $templates)];
+        foreach ($this->getRelated() as $exception) {
+            $id = $exception->getId();
+            if (!$exception instanceof self) {
+                $messages[$id] = $this->renderMessage(
+                    $exception,
+                    $this->findTemplates($templates, $this->getId())
+                );
+                continue;
+            }
+
+            $messages[$id] = $exception->getMessages($this->findTemplates($templates, $id, $this->getId()));
+            if (count($messages[$id]) > 1) {
+                continue;
+            }
+
+            $messages[$id] = current($messages[$exception->getId()]);
         }
 
         if (count($messages) > 1) {
-            array_shift($messages);
+            unset($messages[$this->getId()]);
         }
 
         return $messages;
@@ -199,7 +158,7 @@ class NestedValidationException extends ValidationException implements IteratorA
         $messages = [];
         $exceptions = $this->getIterator();
 
-        if ($this->hasCustomTemplate() || count($exceptions) != 1) {
+        if ($this->hasCustomTemplate() || 1 != count($exceptions)) {
             $messages[] = sprintf('%s %s', $marker, $this->getMessage());
         }
 
@@ -213,7 +172,7 @@ class NestedValidationException extends ValidationException implements IteratorA
     }
 
     /**
-     * @return SplObjectStorage
+     * @return SplObjectStorage|ValidationException[]
      */
     public function getRelated()
     {
@@ -222,49 +181,6 @@ class NestedValidationException extends ValidationException implements IteratorA
         }
 
         return $this->exceptions;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed  $value
-     *
-     * @return self
-     */
-    public function setParam($name, $value)
-    {
-        if ('translator' === $name) {
-            foreach ($this->getRelated() as $exception) {
-                $exception->setParam($name, $value);
-            }
-        }
-
-        parent::setParam($name, $value);
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isRelated($name, ValidationException $exception)
-    {
-        return $exception->getId() === $name || $exception->getName() === $name;
-    }
-
-    /**
-     * @return ValidationException
-     */
-    public function getRelatedByName($name)
-    {
-        if ($this->isRelated($name, $this)) {
-            return $this;
-        }
-
-        foreach ($this->getRecursiveIterator() as $exception) {
-            if ($this->isRelated($name, $exception)) {
-                return $exception;
-            }
-        }
     }
 
     /**
@@ -279,5 +195,26 @@ class NestedValidationException extends ValidationException implements IteratorA
         }
 
         return $this;
+    }
+
+    private function renderMessage(ValidationException $exception, array $templates): string
+    {
+        if (isset($templates[$exception->getId()])) {
+            $exception->updateTemplate($templates[$exception->getId()]);
+        }
+
+        return $exception->getMessage();
+    }
+
+    private function findTemplates(array $templates, ...$ids): array
+    {
+        while (count($ids) > 0) {
+            $id = array_shift($ids);
+            if (isset($templates[$id]) && is_array($templates[$id])) {
+                $templates = $templates[$id];
+            }
+        }
+
+        return $templates;
     }
 }

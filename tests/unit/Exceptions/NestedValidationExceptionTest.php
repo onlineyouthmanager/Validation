@@ -9,57 +9,31 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
-/**
- * phpunit has an issue with mocking exceptions when in HHVM:
- * https://github.com/sebastianbergmann/phpunit-mock-objects/issues/207.
- */
-class PrivateNestedValidationException extends NestedValidationException
-{
-}
+use PHPUnit\Framework\TestCase;
 
-class NestedValidationExceptionTest extends \PHPUnit_Framework_TestCase
+class NestedValidationExceptionTest extends TestCase
 {
-    public function testGetRelatedShouldReturnExceptionAddedByAddRelated()
+    public function testGetRelatedShouldReturnExceptionAddedByAddRelated(): void
     {
-        $composite = new AttributeException();
-        $node = new IntValException();
+        $composite = new AttributeException('input', 'id', [], 'trim');
+        $node = new IntValException('input', 'id', [], 'trim');
         $composite->addRelated($node);
-        $this->assertEquals(1, count($composite->getRelated(true)));
-        $this->assertContainsOnly($node, $composite->getRelated());
+        self::assertEquals(1, count($composite->getRelated(true)));
+        self::assertContainsOnly($node, $composite->getRelated());
     }
 
-    public function testAddingTheSameInstanceShouldAddJustASingleReference()
+    public function testAddingTheSameInstanceShouldAddJustASingleReference(): void
     {
-        $composite = new AttributeException();
-        $node = new IntValException();
+        $composite = new AttributeException('input', 'id', [], 'trim');
+        $node = new IntValException('input', 'id', [], 'trim');
         $composite->addRelated($node);
         $composite->addRelated($node);
         $composite->addRelated($node);
-        $this->assertEquals(1, count($composite->getRelated(true)));
-        $this->assertContainsOnly($node, $composite->getRelated());
-    }
-
-    public function testFindRelatedShouldFindCompositeExceptions()
-    {
-        $foo = new AttributeException();
-        $bar = new AttributeException();
-        $baz = new AttributeException();
-        $bat = new AttributeException();
-        $foo->configure('foo');
-        $bar->configure('bar');
-        $baz->configure('baz');
-        $bat->configure('bat');
-        $foo->addRelated($bar);
-        $bar->addRelated($baz);
-        $baz->addRelated($bat);
-        $this->assertSame($bar, $foo->findRelated('bar'));
-        $this->assertSame($baz, $foo->findRelated('baz'));
-        $this->assertSame($baz, $foo->findRelated('bar.baz'));
-        $this->assertSame($baz, $foo->findRelated('baz'));
-        $this->assertSame($bat, $foo->findRelated('bar.bat'));
-        $this->assertNull($foo->findRelated('none'));
-        $this->assertNull($foo->findRelated('bar.none'));
+        self::assertEquals(1, count($composite->getRelated(true)));
+        self::assertContainsOnly($node, $composite->getRelated());
     }
 }

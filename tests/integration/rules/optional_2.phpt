@@ -8,8 +8,8 @@ use Respect\Validation\Validator as v;
 try {
     v::not(v::optional(v::equals('foo')))->check(null);
 } catch (OptionalException $e) {
-    echo $e->getMainMessage().PHP_EOL;
+    echo $e->getMessage().PHP_EOL;
 }
 ?>
 --EXPECTF--
-null must not be optional
+The value must not be optional

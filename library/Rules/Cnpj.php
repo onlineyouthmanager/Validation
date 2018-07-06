@@ -9,29 +9,56 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
-class Cnpj extends AbstractRule
+use function is_scalar;
+use function mb_strlen;
+use function preg_replace;
+
+/**
+ * Validates if the input is a Brazilian National Registry of Legal Entities (CNPJ) number.
+ *
+ * @author Alexandre Gaigalas <alexandre@gaigalas.net>
+ * @author Henrique Moody <henriquemoody@gmail.com>
+ * @author Jayson Reis <jayson.reis@sabbre.com.br>
+ * @author Renato Moura <renato@naturalweb.com.br>
+ * @author Nick Lombard <github@jigsoft.co.za>
+ * @author William Espindola <oi@williamespindola.com.br>
+ */
+final class Cnpj extends AbstractRule
 {
-    public function validate($input)
+    /**
+     * {@inheritdoc}
+     */
+    public function validate($input): bool
     {
-        //Code ported from jsfromhell.com
-        $c = preg_replace('/\D/', '', $input);
+        if (!is_scalar($input)) {
+            return false;
+        }
+
+        // Code ported from jsfromhell.com
+        $cleanInput = preg_replace('/\D/', '', $input);
         $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
-        if (mb_strlen($c) != 14) {
+        if ($cleanInput < 1) {
             return false;
         }
 
-        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
-
-        if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+        if (14 != mb_strlen($cleanInput)) {
             return false;
         }
 
-        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        for ($i = 0, $n = 0; $i < 12; $n += $cleanInput[$i] * $b[++$i]);
 
-        if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+        if ($cleanInput[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+            return false;
+        }
+
+        for ($i = 0, $n = 0; $i <= 12; $n += $cleanInput[$i] * $b[$i++]);
+
+        if ($cleanInput[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
 

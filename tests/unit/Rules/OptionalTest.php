@@ -9,16 +9,19 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validatable;
 use stdClass;
 
 /**
  * @group  rule
- * @covers Respect\Validation\Rules\Optional
+ * @covers \Respect\Validation\Rules\Optional
  */
-class OptionalTest extends \PHPUnit_Framework_TestCase
+class OptionalTest extends TestCase
 {
     public function providerForOptional()
     {
@@ -49,18 +52,10 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testShouldAcceptInstanceOfValidatobleOnConstructor()
-    {
-        $validatable = $this->createMock(Validatable::class);
-        $rule = new Optional($validatable);
-
-        $this->assertSame($validatable, $rule->getValidatable());
-    }
-
     /**
      * @dataProvider providerForOptional
      */
-    public function testShouldNotValidateRuleWhenInputIsOptional($input)
+    public function testShouldNotValidateRuleWhenInputIsOptional($input): void
     {
         $validatable = $this->createMock(Validatable::class);
         $validatable
@@ -69,13 +64,13 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->validate($input));
+        self::assertTrue($rule->validate($input));
     }
 
     /**
      * @dataProvider providerForNotOptional
      */
-    public function testShouldValidateRuleWhenInputIsNotOptional($input)
+    public function testShouldValidateRuleWhenInputIsNotOptional($input): void
     {
         $validatable = $this->createMock(Validatable::class);
         $validatable
@@ -86,10 +81,10 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->validate($input));
+        self::assertTrue($rule->validate($input));
     }
 
-    public function testShouldNotAssertRuleWhenInputIsOptional()
+    public function testShouldNotAssertRuleWhenInputIsOptional(): void
     {
         $validatable = $this->createMock(Validatable::class);
         $validatable
@@ -98,10 +93,10 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->assert(''));
+        $rule->assert('');
     }
 
-    public function testShouldAssertRuleWhenInputIsNotOptional()
+    public function testShouldAssertRuleWhenInputIsNotOptional(): void
     {
         $input = 'foo';
 
@@ -114,10 +109,10 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->assert($input));
+        $rule->assert($input);
     }
 
-    public function testShouldNotCheckRuleWhenInputIsOptional()
+    public function testShouldNotCheckRuleWhenInputIsOptional(): void
     {
         $validatable = $this->createMock(Validatable::class);
         $validatable
@@ -126,10 +121,10 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->check(''));
+        $rule->check('');
     }
 
-    public function testShouldCheckRuleWhenInputIsNotOptional()
+    public function testShouldCheckRuleWhenInputIsNotOptional(): void
     {
         $input = 'foo';
 
@@ -142,6 +137,6 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
         $rule = new Optional($validatable);
 
-        $this->assertTrue($rule->check($input));
+        $rule->check($input);
     }
 }

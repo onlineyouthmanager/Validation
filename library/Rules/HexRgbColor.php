@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 class HexRgbColor extends Xdigit
 {
-    public function validate($input)
+    public function validate($input): bool
     {
         if (!is_string($input)) {
             return false;
@@ -24,7 +26,7 @@ class HexRgbColor extends Xdigit
         }
 
         $length = mb_strlen($input);
-        if ($length != 3 && $length != 6) {
+        if (3 != $length && 6 != $length) {
             return false;
         }
 

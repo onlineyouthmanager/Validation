@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 class FalseVal extends AbstractRule
 {
-    public function validate($input)
+    public function validate($input): bool
     {
         if (false === $input) { // PHP 5.3 workaround
             return true;

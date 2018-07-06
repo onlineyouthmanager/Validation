@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 class VideoUrlException extends ValidationException
 {
-    const SERVICE = 1;
+    public const SERVICE = 'service';
 
     public static $defaultTemplates = [
         self::MODE_DEFAULT => [
@@ -29,9 +31,9 @@ class VideoUrlException extends ValidationException
     /**
      * {@inheritdoc}
      */
-    public function chooseTemplate()
+    protected function chooseTemplate(): string
     {
-        if (false !== $this->getParam('service')) {
+        if ($this->getParam('service')) {
             return self::SERVICE;
         }
 

@@ -1,6 +1,6 @@
 # Pesel
 
-- `v::pesel()`
+- `Pesel()`
 
 Validates PESEL (Polish human identification number).
 
@@ -11,10 +11,15 @@ v::pesel()->validate('97072704801'); // false
 v::pesel()->validate('PESEL123456'); // false
 ```
 
+## Changelog
+
+Version | Description
+--------|-------------
+  1.1.0 | Created
+
 ***
 See also:
 
-  * [Bank](Bank.md)
-  * [IdentityCard](IdentityCard.md)
-  * [SubdivisionCode](SubdivisionCode.md)
-  * [Vatin](Vatin.md)
+- [IdentityCard](IdentityCard.md)
+- [SubdivisionCode](SubdivisionCode.md)
+- [Vatin](Vatin.md)

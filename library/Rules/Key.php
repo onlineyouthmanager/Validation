@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use Respect\Validation\Exceptions\ComponentException;
@@ -29,7 +31,7 @@ class Key extends AbstractRelated
         return $input[$this->reference];
     }
 
-    public function hasReference($input)
+    public function hasReference($input): bool
     {
         return is_array($input) && array_key_exists($this->reference, $input);
     }

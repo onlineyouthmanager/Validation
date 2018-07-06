@@ -9,7 +9,7 @@ use Respect\Validation\Validator as v;
 try {
     v::notBlank()->check(null);
 } catch (NotBlankException $e) {
-    echo $e->getMainMessage().PHP_EOL;
+    echo $e->getMessage().PHP_EOL;
 }
 
 try {
@@ -19,5 +19,5 @@ try {
 }
 ?>
 --EXPECTF--
-null must not be blank
-- "" must not be blank
+The value must not be blank
+- The value must not be blank
