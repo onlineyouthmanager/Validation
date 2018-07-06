@@ -9,11 +9,15 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
+
+use Respect\Validation\Test\RuleTestCase;
 
 /**
  * @group  rule
- * @covers Respect\Validation\Rules\Nif
+ * @covers \Respect\Validation\Rules\Nif
  *
  * @author Julián Gutiérrez <juliangut@gmail.com>
  */
@@ -22,7 +26,7 @@ final class NifTest extends RuleTestCase
     /**
      * {@inheritdoc}
      */
-    public function providerForValidInput()
+    public function providerForValidInput(): array
     {
         $rule = new Nif();
 
@@ -42,6 +46,7 @@ final class NifTest extends RuleTestCase
             [$rule, 'Y1168744J'],
 
             // CIF
+            [$rule, 'B56109770'],
             [$rule, 'V8002614I'],
             [$rule, 'R1332622H'],
             [$rule, 'Q6771656C'],
@@ -53,7 +58,7 @@ final class NifTest extends RuleTestCase
     /**
      * {@inheritdoc}
      */
-    public function providerForInvalidInput()
+    public function providerForInvalidInput(): array
     {
         $rule = new Nif();
 
@@ -75,6 +80,7 @@ final class NifTest extends RuleTestCase
             [$rule, 'X3155250B'],
 
             // CIF
+            [$rule, 'B56109771'],
             [$rule, 'v8002614i'],
             [$rule, 'C0325664D'],
             [$rule, 'R27038239'],

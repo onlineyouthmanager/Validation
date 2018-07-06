@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 class Call extends AbstractRelated
@@ -18,7 +20,7 @@ class Call extends AbstractRelated
         return call_user_func_array($this->reference, [&$input]);
     }
 
-    public function hasReference($input)
+    public function hasReference($input): bool
     {
         return is_callable($this->reference);
     }

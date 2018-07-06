@@ -9,16 +9,18 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 class UrlException extends ValidationException
 {
     public static $defaultTemplates = [
         self::MODE_DEFAULT => [
-            self::STANDARD => '{{name}} must be an URL',
+            self::STANDARD => '{{name}} must be a URL',
         ],
         self::MODE_NEGATIVE => [
-            self::STANDARD => '{{name}} must not be an URL',
+            self::STANDARD => '{{name}} must not be a URL',
         ],
     ];
 }

@@ -9,30 +9,33 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation;
 
+use PHPUnit\Framework\TestCase;
 use Respect\Validation\Exceptions\ComponentException;
 
-class ValidatorTest extends \PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
-    public function testStaticCreateShouldReturnNewValidator()
+    public function testStaticCreateShouldReturnNewValidator(): void
     {
-        $this->assertInstanceOf(Validator::class, Validator::create());
+        self::assertInstanceOf(Validator::class, Validator::create());
     }
 
-    public function testInvalidRuleClassShouldThrowComponentException()
+    public function testInvalidRuleClassShouldThrowComponentException(): void
     {
-        $this->setExpectedException(ComponentException::class);
+        $this->expectException(ComponentException::class);
         Validator::iDoNotExistSoIShouldThrowException();
     }
 
     /**
      * Regression test #174.
      */
-    public function testShouldReturnValidatorInstanceWhenTheNotRuleIsCalledWithArguments()
+    public function testShouldReturnValidatorInstanceWhenTheNotRuleIsCalledWithArguments(): void
     {
         $validator = new Validator();
 
-        $this->assertSame($validator, $validator->not($validator->notEmpty()));
+        self::assertSame($validator, $validator->not($validator->notEmpty()));
     }
 }

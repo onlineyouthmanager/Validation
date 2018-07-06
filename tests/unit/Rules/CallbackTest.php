@@ -9,25 +9,36 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
-/**
- * @group  rule
- * @covers Respect\Validation\Rules\Callback
- * @covers Respect\Validation\Exceptions\CallbackException
- */
-class CallbackTest extends \PHPUnit_Framework_TestCase
-{
-    private $truthy, $falsy;
+use Respect\Validation\Test\RuleTestCase;
 
-    public function setUp()
+/**
+ * @group rule
+ *
+ * @covers \Respect\Validation\Rules\Callback
+ *
+ * @author Alexandre Gomes Gaigalas <alexandre@gaigalas.net>
+ * @author Gabriel Caruso <carusogabriel34@gmail.com>
+ * @author Henrique Moody <henriquemoody@gmail.com>
+ * @author Nick Lombard <github@jigsoft.co.za>
+ * @author William Espindola <oi@williamespindola.com.br>
+ */
+final class CallbackTest extends RuleTestCase
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function providerForValidInput(): array
     {
-        $this->truthy = new Callback(function () {
-            return true;
-        });
-        $this->falsy = new Callback(function () {
-            return false;
-        });
+        return [
+            [new Callback('is_a', 'stdClass'), new \stdClass()],
+            [new Callback([$this, 'thisIsASampleCallbackUsedInsideThisTest']), 'test'],
+            [new Callback('is_string'), 'test'],
+            [new Callback(function () { return true; }), 'wpoiur'],
+        ];
     }
 
     public function thisIsASampleCallbackUsedInsideThisTest()
@@ -35,52 +46,14 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         return true;
     }
 
-    public function testShouldBeAbleToDefineLatestArgumentsOnConstructor()
-    {
-        $rule = new Callback('is_a', 'stdClass');
-
-        $this->assertTrue($rule->validate(new \stdClass()));
-    }
-
     /**
-     * @expectedException Respect\Validation\Exceptions\CallbackException
+     * {@inheritdoc}
      */
-    public function testCallbackValidatorShouldReturnFalseForEmptyString()
+    public function providerForInvalidInput(): array
     {
-        $this->falsy->assert('');
-    }
-
-    public function testCallbackValidatorShouldReturnTrueIfCallbackReturnsTrue()
-    {
-        $this->assertTrue($this->truthy->assert('wpoiur'));
-    }
-
-    /**
-     * @expectedException Respect\Validation\Exceptions\CallbackException
-     */
-    public function testCallbackValidatorShouldReturnFalseIfCallbackReturnsFalse()
-    {
-        $this->assertTrue($this->falsy->assert('w poiur'));
-    }
-
-    public function testCallbackValidatorShouldAcceptArrayCallbackDefinitions()
-    {
-        $v = new Callback([$this, 'thisIsASampleCallbackUsedInsideThisTest']);
-        $this->assertTrue($v->assert('test'));
-    }
-
-    public function testCallbackValidatorShouldAcceptFunctionNamesAsString()
-    {
-        $v = new Callback('is_string');
-        $this->assertTrue($v->assert('test'));
-    }
-
-    /**
-     * @expectedException Respect\Validation\Exceptions\ComponentException
-     */
-    public function testInvalidCallbacksShouldRaiseComponentExceptionUponInstantiation()
-    {
-        $v = new Callback(new \stdClass());
-        $this->assertTrue($v->assert('w poiur'));
+        return [
+            [new Callback(function () { return false; }), 'w poiur'],
+            [new Callback(function () { return false; }), ''],
+        ];
     }
 }

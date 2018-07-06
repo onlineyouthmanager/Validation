@@ -9,12 +9,15 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 use DirectoryIterator;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-class CheckExceptionsTest extends \PHPUnit_Framework_TestCase
+class CheckExceptionsTest extends TestCase
 {
     protected $deprecateds = [];
 
@@ -30,7 +33,7 @@ class CheckExceptionsTest extends \PHPUnit_Framework_TestCase
 
             $ruleName = mb_substr($fileInfo->getBasename(), 0, -4);
             $ruleIsDeprecated = in_array($ruleName, $this->deprecateds);
-            $isRuleClassFile = (bool) ($fileInfo->getExtension() !== 'php');
+            $isRuleClassFile = (bool) ('php' !== $fileInfo->getExtension());
             if ($ruleIsDeprecated || $isRuleClassFile) {
                 continue;
             }
@@ -50,24 +53,17 @@ class CheckExceptionsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider provideListOfRuleNames
      */
-    public function testRuleHasAnExceptionWhichHasValidApi($ruleName)
+    public function testRuleHasAnExceptionWhichHasValidApi($ruleName): void
     {
         $exceptionClass = 'Respect\\Validation\\Exceptions\\'.$ruleName.'Exception';
-        $this->assertTrue(
+        self::assertTrue(
             class_exists($exceptionClass),
             sprintf('Expected exception class to exist: %s.', $ruleName)
         );
 
-        $expectedMessage = 'Test exception message.';
-        $exceptionObject = new $exceptionClass($expectedMessage);
-        $this->assertInstanceOf(
-            'Exception',
-            $exceptionObject,
-            'Every exception should extend an Exception class.'
-        );
-        $this->assertInstanceOf(
-            ValidationException::class,
-            $exceptionObject,
+        $reflectionClass = new ReflectionClass($exceptionClass);
+        self::assertTrue(
+            $reflectionClass->isSubclassOf(ValidationException::class),
             'Every Respect/Validation exception must extend ValidationException.'
         );
     }

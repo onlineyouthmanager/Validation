@@ -1,6 +1,6 @@
 # Type
 
-- `v::type(string $type)`
+- `Type(string $type)`
 
 Validates the type of input.
 
@@ -10,22 +10,29 @@ v::type('callable')->validate(function (){}); // true
 v::type('object')->validate(new stdClass()); // true
 ```
 
+## Changelog
+
+Version | Description
+--------|-------------
+  2.0.0 | Became case-sensitive
+  0.8.0 | Created
+
 ***
 See also:
 
-  * [ArrayVal](ArrayVal.md)
-  * [BoolType](BoolType.md)
-  * [CallableType](CallableType.md)
-  * [Finite](Finite.md)
-  * [FloatType](FloatType.md)
-  * [FloatVal](FloatVal.md)
-  * [Infinite](Infinite.md)
-  * [Instance](Instance.md)
-  * [IntType](IntType.md)
-  * [IntVal](IntVal.md)
-  * [NullType](NullType.md)
-  * [ObjectType](ObjectType.md)
-  * [ResourceType](ResourceType.md)
-  * [ScalarVal](ScalarVal.md)
-  * [StringType](StringType.md)
-  * [Type](Type.md)
+- [ArrayVal](ArrayVal.md)
+- [BoolType](BoolType.md)
+- [CallableType](CallableType.md)
+- [Finite](Finite.md)
+- [FloatType](FloatType.md)
+- [FloatVal](FloatVal.md)
+- [Infinite](Infinite.md)
+- [Instance](Instance.md)
+- [IntType](IntType.md)
+- [IntVal](IntVal.md)
+- [NullType](NullType.md)
+- [ObjectType](ObjectType.md)
+- [ResourceType](ResourceType.md)
+- [ScalarVal](ScalarVal.md)
+- [StringType](StringType.md)
+- [Type](Type.md)

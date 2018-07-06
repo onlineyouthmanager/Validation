@@ -9,16 +9,20 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group  rule
- * @covers Respect\Validation\Rules\OneOf
- * @covers Respect\Validation\Exceptions\OneOfException
+ * @covers \Respect\Validation\Rules\OneOf
+ * @covers \Respect\Validation\Exceptions\OneOfException
  */
-class OneOfTest extends \PHPUnit_Framework_TestCase
+class OneOfTest extends TestCase
 {
-    public function testValid()
+    public function testValid(): void
     {
         $valid1 = new Callback(function () {
             return false;
@@ -29,16 +33,29 @@ class OneOfTest extends \PHPUnit_Framework_TestCase
         $valid3 = new Callback(function () {
             return false;
         });
-        $o = new OneOf($valid1, $valid2, $valid3);
-        $this->assertTrue($o->validate('any'));
-        $this->assertTrue($o->assert('any'));
-        $this->assertTrue($o->check('any'));
+
+        $rule = new OneOf($valid1, $valid2, $valid3);
+
+        self::assertTrue($rule->validate('any'));
+        $rule->assert('any');
+        $rule->check('any');
     }
 
     /**
-     * @expectedException Respect\Validation\Exceptions\OneOfException
+     * @expectedException \Respect\Validation\Exceptions\OneOfException
      */
-    public function testInvalid()
+    public function testEmptyChain(): void
+    {
+        $rule = new OneOf();
+
+        self::assertFalse($rule->validate('any'));
+        $rule->check('any');
+    }
+
+    /**
+     * @expectedException \Respect\Validation\Exceptions\OneOfException
+     */
+    public function testInvalid(): void
     {
         $valid1 = new Callback(function () {
             return false;
@@ -49,18 +66,81 @@ class OneOfTest extends \PHPUnit_Framework_TestCase
         $valid3 = new Callback(function () {
             return false;
         });
-        $o = new OneOf($valid1, $valid2, $valid3);
-        $this->assertFalse($o->validate('any'));
-        $this->assertFalse($o->assert('any'));
+        $rule = new OneOf($valid1, $valid2, $valid3);
+        self::assertFalse($rule->validate('any'));
+        $rule->assert('any');
     }
 
     /**
-     * @expectedException Respect\Validation\Exceptions\XdigitException
+     * @expectedException \Respect\Validation\Exceptions\OneOfException
      */
-    public function testInvalidCheck()
+    public function testInvalidMultipleAssert(): void
     {
-        $o = new OneOf(new Xdigit(), new Alnum());
-        $this->assertFalse($o->validate(-10));
-        $this->assertFalse($o->check(-10));
+        $valid1 = new Callback(function () {
+            return true;
+        });
+        $valid2 = new Callback(function () {
+            return true;
+        });
+        $valid3 = new Callback(function () {
+            return false;
+        });
+        $rule = new OneOf($valid1, $valid2, $valid3);
+        self::assertFalse($rule->validate('any'));
+
+        $rule->assert('any');
+    }
+
+    /**
+     * @expectedException \Respect\Validation\Exceptions\CallbackException
+     */
+    public function testInvalidMultipleCheck(): void
+    {
+        $valid1 = new Callback(function () {
+            return true;
+        });
+        $valid2 = new Callback(function () {
+            return true;
+        });
+        $valid3 = new Callback(function () {
+            return false;
+        });
+
+        $rule = new OneOf($valid1, $valid2, $valid3);
+        self::assertFalse($rule->validate('any'));
+
+        $rule->check('any');
+    }
+
+    /**
+     * @expectedException \Respect\Validation\Exceptions\OneOfException
+     */
+    public function testInvalidMultipleCheckAllValid(): void
+    {
+        $valid1 = new Callback(function () {
+            return true;
+        });
+        $valid2 = new Callback(function () {
+            return true;
+        });
+        $valid3 = new Callback(function () {
+            return true;
+        });
+
+        $rule = new OneOf($valid1, $valid2, $valid3);
+        self::assertFalse($rule->validate('any'));
+
+        $rule->check('any');
+    }
+
+    /**
+     * @expectedException \Respect\Validation\Exceptions\XdigitException
+     */
+    public function testInvalidCheck(): void
+    {
+        $rule = new OneOf(new Xdigit(), new Alnum());
+        self::assertFalse($rule->validate(-10));
+
+        $rule->check(-10);
     }
 }

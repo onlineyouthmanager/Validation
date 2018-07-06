@@ -9,46 +9,51 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator;
 
 /**
  * @group  rule
- * @covers Respect\Validation\Rules\Not
- * @covers Respect\Validation\Exceptions\NotException
+ * @covers \Respect\Validation\Rules\Not
+ * @covers \Respect\Validation\Exceptions\NotException
  */
-class NotTest extends \PHPUnit_Framework_TestCase
+class NotTest extends TestCase
 {
     /**
+     * @doesNotPerformAssertions
+     *
      * @dataProvider providerForValidNot
      */
-    public function testNot($v, $input)
+    public function testNot($v, $input): void
     {
         $not = new Not($v);
-        $this->assertTrue($not->assert($input));
+        $not->assert($input);
     }
 
     /**
      * @dataProvider providerForInvalidNot
-     * @expectedException Respect\Validation\Exceptions\ValidationException
+     * @expectedException \Respect\Validation\Exceptions\ValidationException
      */
-    public function testNotNotHaha($v, $input)
+    public function testNotNotHaha($v, $input): void
     {
         $not = new Not($v);
-        $this->assertFalse($not->assert($input));
+        $not->assert($input);
     }
 
     /**
      * @dataProvider providerForSetName
      */
-    public function testNotSetName($v)
+    public function testNotSetName($v): void
     {
         $not = new Not($v);
         $not->setName('Foo');
 
-        $this->assertEquals('Foo', $not->getName());
-        $this->assertEquals('Foo', $v->getName());
+        self::assertEquals('Foo', $not->getName());
+        self::assertEquals('Foo', $v->getName());
     }
 
     public function providerForValidNot()
@@ -69,9 +74,9 @@ class NotTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [new IntVal(), 123],
-            [new AllOf(new OneOf(new NumericVal(), new IntVal())), 13.37],
-            [new OneOf(new NumericVal(), new IntVal()), 13.37],
-            [Validator::oneOf(Validator::numericVal(), Validator::intVal()), 13.37],
+            [new AllOf(new AnyOf(new NumericVal(), new IntVal())), 13.37],
+            [new AnyOf(new NumericVal(), new IntVal()), 13.37],
+            [Validator::anyOf(Validator::numericVal(), Validator::intVal()), 13.37],
         ];
     }
 

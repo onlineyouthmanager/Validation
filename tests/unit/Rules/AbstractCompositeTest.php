@@ -9,13 +9,16 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validatable;
 
-class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
+class AbstractCompositeTest extends TestCase
 {
-    public function testShouldDefineNameForInternalWhenAppendRuleToCompositeRule()
+    public function testShouldDefineNameForInternalWhenAppendRuleToCompositeRule(): void
     {
         $ruleName = 'something';
 
@@ -37,7 +40,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->addRule($simpleRuleMock);
     }
 
-    public function testShouldUpdateInternalRuleNameWhenNameIsUpdated()
+    public function testShouldUpdateInternalRuleNameWhenNameIsUpdated(): void
     {
         $ruleName1 = 'something';
         $ruleName2 = 'something else';
@@ -69,7 +72,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->setName($ruleName2);
     }
 
-    public function testShouldNotUpdateInternalRuleAlreadyHasAName()
+    public function testShouldNotUpdateInternalRuleAlreadyHasAName(): void
     {
         $simpleRuleMock = $this->createMock(Validatable::class);
         $simpleRuleMock
@@ -88,7 +91,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->setName('Whatever');
     }
 
-    public function testShouldUpdateInternalRuleWhenItsNameIsNull()
+    public function testShouldUpdateInternalRuleWhenItsNameIsNull(): void
     {
         $ruleName = 'something';
 
@@ -110,7 +113,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->setName($ruleName);
     }
 
-    public function testShouldDefineNameForInternalRulesWhenItHasNotAName()
+    public function testShouldDefineNameForInternalRulesWhenItHasNotAName(): void
     {
         $ruleName = 'something';
 
@@ -132,7 +135,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->setName($ruleName);
     }
 
-    public function testShouldNotDefineNameForInternalRulesWhenItHasAName()
+    public function testShouldNotDefineNameForInternalRulesWhenItHasAName(): void
     {
         $ruleName = 'something';
 
@@ -153,7 +156,7 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->setName($ruleName);
     }
 
-    public function testRemoveRulesShouldRemoveAllTheAddedRules()
+    public function testRemoveRulesShouldRemoveAllTheAddedRules(): void
     {
         $simpleRuleMock = $this->createMock(Validatable::class);
 
@@ -161,27 +164,27 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
         $compositeRuleMock->addRule($simpleRuleMock);
         $compositeRuleMock->removeRules();
 
-        $this->assertEmpty($compositeRuleMock->getRules());
+        self::assertEmpty($compositeRuleMock->getRules());
     }
 
-    public function testShouldReturnTheAmountOfAddedRules()
+    public function testShouldReturnTheAmountOfAddedRules(): void
     {
         $compositeRuleMock = $this->getMockForAbstractClass(AbstractComposite::class);
         $compositeRuleMock->addRule($this->createMock(Validatable::class));
         $compositeRuleMock->addRule($this->createMock(Validatable::class));
         $compositeRuleMock->addRule($this->createMock(Validatable::class));
 
-        $this->assertCount(3, $compositeRuleMock->getRules());
+        self::assertCount(3, $compositeRuleMock->getRules());
     }
 
-    public function testHasRuleShouldReturnFalseWhenThereIsNoRuleAppended()
+    public function testHasRuleShouldReturnFalseWhenThereIsNoRuleAppended(): void
     {
         $compositeRuleMock = $this->getMockForAbstractClass(AbstractComposite::class);
 
-        $this->assertFalse($compositeRuleMock->hasRule(''));
+        self::assertFalse($compositeRuleMock->hasRule(''));
     }
 
-    public function testHasRuleShouldReturnFalseWhenRuleIsNotFound()
+    public function testHasRuleShouldReturnFalseWhenRuleIsNotFound(): void
     {
         $oneSimpleRuleMock = $this->createMock(Validatable::class);
 
@@ -190,30 +193,30 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
 
         $anotherSimpleRuleMock = $this->createMock(Validatable::class);
 
-        $this->assertFalse($compositeRuleMock->hasRule($anotherSimpleRuleMock));
+        self::assertFalse($compositeRuleMock->hasRule($anotherSimpleRuleMock));
     }
 
-    public function testHasRuleShouldReturnFalseWhenRulePassedAsStringIsNotFound()
+    public function testHasRuleShouldReturnFalseWhenRulePassedAsStringIsNotFound(): void
     {
         $simpleRuleMock = $this->createMock(Validatable::class);
 
         $compositeRuleMock = $this->getMockForAbstractClass(AbstractComposite::class);
         $compositeRuleMock->addRule($simpleRuleMock);
 
-        $this->assertFalse($compositeRuleMock->hasRule('SomeRule'));
+        self::assertFalse($compositeRuleMock->hasRule('SomeRule'));
     }
 
-    public function testHasRuleShouldReturnTrueWhenRuleIsFound()
+    public function testHasRuleShouldReturnTrueWhenRuleIsFound(): void
     {
         $simpleRuleMock = $this->createMock(Validatable::class);
 
         $compositeRuleMock = $this->getMockForAbstractClass(AbstractComposite::class);
         $compositeRuleMock->addRule($simpleRuleMock);
 
-        $this->assertTrue($compositeRuleMock->hasRule($simpleRuleMock));
+        self::assertTrue($compositeRuleMock->hasRule($simpleRuleMock));
     }
 
-    public function testShouldAddRulesByPassingThroughConstructor()
+    public function testShouldAddRulesByPassingThroughConstructor(): void
     {
         $simpleRuleMock = $this->createMock(Validatable::class);
         $anotherSimpleRuleMock = $this->createMock(Validatable::class);
@@ -223,6 +226,6 @@ class AbstractCompositeTest extends \PHPUnit_Framework_TestCase
             $anotherSimpleRuleMock,
         ]);
 
-        $this->assertCount(2, $compositeRuleMock->getRules());
+        self::assertCount(2, $compositeRuleMock->getRules());
     }
 }

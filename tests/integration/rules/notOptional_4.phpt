@@ -9,7 +9,7 @@ use Respect\Validation\Validator as v;
 try {
     v::not(v::notOptional())->check(0);
 } catch (NotOptionalException $e) {
-    echo $e->getMainMessage().PHP_EOL;
+    echo $e->getMessage().PHP_EOL;
 }
 
 try {
@@ -26,5 +26,5 @@ try {
 ?>
 --EXPECTF--
 The value must be optional
-- { } must be optional
+- The value must be optional
 - Field must be optional

@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 class AlphaException extends ValidationException
 {
-    const EXTRA = 1;
+    public const EXTRA = 'extra';
 
     public static $defaultTemplates = [
         self::MODE_DEFAULT => [
@@ -26,7 +28,7 @@ class AlphaException extends ValidationException
         ],
     ];
 
-    public function chooseTemplate()
+    protected function chooseTemplate(): string
     {
         return $this->getParam('additionalChars') ? static::EXTRA : static::STANDARD;
     }

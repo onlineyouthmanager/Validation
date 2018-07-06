@@ -9,22 +9,26 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation;
+
+use Respect\Validation\Exceptions\ValidationException;
 
 /** Interface for validation rules */
 interface Validatable
 {
-    public function assert($input);
+    public function assert($input): void;
 
-    public function check($input);
+    public function check($input): void;
 
-    public function getName();
+    public function getName(): ?string;
 
-    public function reportError($input, array $relatedExceptions = []);
+    public function reportError($input, array $relatedExceptions = []): ValidationException;
 
-    public function setName($name);
+    public function setName(string $name): Validatable;
 
-    public function setTemplate($template);
+    public function setTemplate(string $template): Validatable;
 
-    public function validate($input);
+    public function validate($input): bool;
 }

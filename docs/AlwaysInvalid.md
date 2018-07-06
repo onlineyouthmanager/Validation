@@ -1,14 +1,20 @@
 # AlwaysInvalid
 
-- `v::alwaysInvalid()`
+- `AlwaysInvalid()`
 
-Always return false.
+Validates any input as invalid.
 
 ```php
-v::alwaysInvalid()->validate($whatever); // false
+v::alwaysInvalid()->validate('whatever'); // false
 ```
+
+## Changelog
+
+Version | Description
+--------|-------------
+  0.5.0 | Created
 
 ***
 See also:
 
-  * [AlwaysValid](AlwaysValid.md)
+- [AlwaysValid](AlwaysValid.md)

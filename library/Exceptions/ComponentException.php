@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
-use Exception;
-
-class ComponentException extends Exception implements ExceptionInterface
+class ComponentException extends \Exception implements Exception
 {
 }

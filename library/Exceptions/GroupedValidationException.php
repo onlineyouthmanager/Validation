@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Exceptions;
 
 class GroupedValidationException extends NestedValidationException
 {
-    const NONE = 0;
-    const SOME = 1;
+    public const NONE = 'none';
+    public const SOME = 'some';
 
     public static $defaultTemplates = [
         self::MODE_DEFAULT => [
@@ -27,7 +29,7 @@ class GroupedValidationException extends NestedValidationException
         ],
     ];
 
-    public function chooseTemplate()
+    protected function chooseTemplate(): string
     {
         $numRules = $this->getParam('passed');
         $numFailed = $this->getRelated()->count();

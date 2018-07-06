@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Respect\Validation\Rules;
 
 use ReflectionClass;
@@ -19,7 +21,7 @@ use Symfony\Component\Validator\Validation;
 
 class Sf extends AbstractRule
 {
-    const SYMFONY_CONSTRAINT_NAMESPACE = 'Symfony\Component\Validator\Constraints\%s';
+    public const SYMFONY_CONSTRAINT_NAMESPACE = 'Symfony\Component\Validator\Constraints\%s';
     public $name;
     private $constraint;
 
@@ -53,17 +55,17 @@ class Sf extends AbstractRule
         return $validator->validate($valueToValidate, $symfonyConstraint);
     }
 
-    public function assert($input)
+    public function assert($input): void
     {
         $violations = $this->returnViolationsForConstraint($input, $this->constraint);
-        if (count($violations) == 0) {
-            return true;
+        if (0 == count($violations)) {
+            return;
         }
 
         throw $this->reportError((string) $violations);
     }
 
-    public function validate($input)
+    public function validate($input): bool
     {
         $violations = $this->returnViolationsForConstraint($input, $this->constraint);
         if (count($violations)) {

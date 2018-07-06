@@ -3,24 +3,22 @@
 require 'vendor/autoload.php';
 
 use Respect\Validation\Exceptions\ValidationException;
+use Respect\Validation\Factory;
 use Respect\Validation\Validator;
 
-function translatorCallback($message)
-{
+Factory::setDefaultInstance(new Factory([], [], function (string $message): string {
     $messages = [
-        '{{name}} must be a string' => '{{name}} deve ser uma string',
+        '{{name}} must be of type string' => '{{name}} deve ser do tipo string',
     ];
 
     return $messages[$message];
-}
+}));
 
 try {
     Validator::stringType()->length(2, 15)->check(0);
 } catch (ValidationException $exception) {
-    $exception->setParam('translator', 'translatorCallback');
-
-    echo $exception->getMainMessage();
+    echo $exception->getMessage();
 }
 ?>
 --EXPECTF--
-0 deve ser uma string
+0 deve ser do tipo string
