@@ -168,7 +168,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * @method static Validator yes($useLocale = false)
  * @method static Validator zend($validator, array $params = null)
  */
-final class Validator extends AllOf
+class Validator extends AllOf
 {
     /**
      * {@inheritdoc}
