@@ -76,7 +76,7 @@ final class Each extends AbstractRule
         }
 
         if (!empty($exceptions)) {
-            throw $this->reportError($input)->setRelated($exceptions);
+            throw $this->reportError($input)->addChildren($exceptions);
         }
     }
 

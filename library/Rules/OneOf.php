@@ -24,11 +24,11 @@ class OneOf extends AbstractComposite
     public function assert($input): void
     {
         $validators = $this->getRules();
-        $exceptions = $this->validateRules($input);
+        $exceptions = $this->getAllThrownExceptions($input);
         $numRules = count($validators);
         $numExceptions = count($exceptions);
         if ($numExceptions !== $numRules - 1) {
-            throw $this->reportError($input)->setRelated($exceptions);
+            throw $this->reportError($input)->addChildren($exceptions);
         }
     }
 

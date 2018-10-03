@@ -10,15 +10,17 @@
 [The most awesome validation engine ever created for PHP.](http://bit.ly/1a1oeQv)
 
 - Complex rules made simple: `v::numericVal()->positive()->between(1, 255)->validate($input)`.
-- [Granularity control](docs/README.md#validation-methods) for advanced reporting.
-- [More than 130](docs/VALIDATORS.md) (fully tested) validation rules.
-- [A concrete API](docs/CONCRETE_API.md) for non fluent usage.
+- Granularity control for advanced reporting.
+- More than 130 (fully tested) validation rules.
+- A concrete API for non fluent usage.
+
+## Documentation
+
+Documentation can be found in https://respect-validation.readthedocs.io
+and also in the [docs/](docs/) folder.
 
 ## Table of contents
 
 - [Contributing](CONTRIBUTING.md)
-- [Feature Guide](docs/README.md)
-- [Installation](docs/INSTALL.md)
 - [License](LICENSE.md)
-- [Validators](docs/VALIDATORS.md)
 - [Changelog](CHANGELOG.md)

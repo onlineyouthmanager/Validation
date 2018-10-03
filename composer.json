@@ -21,8 +21,9 @@
         "friendsofphp/php-cs-fixer": "^2.8",
         "malukenho/docheader": "^0.1.4",
         "mikey179/vfsStream": "^1.6",
-        "phpunit/phpunit": "^6.4",
-        "symfony/validator": "^3.0",
+        "phpstan/phpstan": "^0.10.3",
+        "phpunit/phpunit": "^7.3",
+        "symfony/validator": "^3.0||^4.0",
         "zendframework/zend-validator": "^2.0"
     },
     "suggest": {
@@ -41,6 +42,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Respect\\Validation\\": "tests/unit/",
             "Respect\\Validation\\Test\\": "tests/library/"
         }
     },
@@ -50,6 +52,17 @@
         }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit"
+        "docheader": "docheader check library/ tests/",
+        "php-cs-fixer": "php-cs-fixer fix",
+        "phpstan": "phpstan analyze",
+        "phpunit": "phpunit",
+        "phpunit-integration": "phpunit --testsuite=integration",
+        "phpunit-unit": "phpunit --testsuite=unit",
+        "qa": [
+            "@docheader",
+            "@php-cs-fixer",
+            "@phpstan",
+            "@phpunit"
+        ]
     }
 }

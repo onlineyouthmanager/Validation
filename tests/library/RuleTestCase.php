@@ -16,6 +16,7 @@ namespace Respect\Validation\Test;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validatable;
+use function realpath;
 use function sprintf;
 
 /**
@@ -53,6 +54,16 @@ abstract class RuleTestCase extends TestCase
     abstract public function providerForInvalidInput(): array;
 
     /**
+     * Returns the directory used to store test fixtures.
+     *
+     * @return string
+     */
+    public function getFixtureDirectory(): string
+    {
+        return realpath(__DIR__.'/../fixtures');
+    }
+
+    /**
      * Create a mock of a Validatable.
      *
      * @api
@@ -75,17 +86,17 @@ abstract class RuleTestCase extends TestCase
             ->getMock();
 
         $validatableMocked
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('validate')
             ->willReturn($expectedResult);
 
         if ($expectedResult) {
             $validatableMocked
-                ->expects($this->any())
+                ->expects(self::any())
                 ->method('check')
                 ->willReturn($expectedResult);
             $validatableMocked
-                ->expects($this->any())
+                ->expects(self::any())
                 ->method('assert')
                 ->willReturn($expectedResult);
         } else {
@@ -97,7 +108,7 @@ abstract class RuleTestCase extends TestCase
             );
             $checkException->updateTemplate(sprintf('Exception for %s:check() method', $mockClassName));
             $validatableMocked
-                ->expects($this->any())
+                ->expects(self::any())
                 ->method('check')
                 ->willThrowException($checkException);
             $assertException = new ValidationException(
@@ -108,7 +119,7 @@ abstract class RuleTestCase extends TestCase
             );
             $assertException->updateTemplate(sprintf('Exception for %s:assert() method', $mockClassName));
             $validatableMocked
-                ->expects($this->any())
+                ->expects(self::any())
                 ->method('assert')
                 ->willThrowException($assertException);
         }

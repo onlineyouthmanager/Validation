@@ -38,6 +38,8 @@ class Domain extends AbstractComposite
             ),
             new Not(new EndsWith('-'))
         );
+
+        parent::__construct();
     }
 
     public function tldCheck($do = true)
@@ -95,7 +97,7 @@ class Domain extends AbstractComposite
         }
 
         if (count($e)) {
-            throw $this->reportError($input)->setRelated($e);
+            throw $this->reportError($input)->addChildren($e);
         }
     }
 

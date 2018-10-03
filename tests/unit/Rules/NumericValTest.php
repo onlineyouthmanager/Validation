@@ -13,62 +13,51 @@ declare(strict_types=1);
 
 namespace Respect\Validation\Rules;
 
-use PHPUnit\Framework\TestCase;
+use Respect\Validation\Test\RuleTestCase;
 
 /**
- * @group  rule
+ * @group rule
+ *
  * @covers \Respect\Validation\Rules\NumericVal
- * @covers \Respect\Validation\Exceptions\NumericValException
+ *
+ * @author Alexandre Gomes Gaigalas <alexandre@gaigalas.net>
+ * @author Augusto Pascutti <contato@augustopascutti.com>
+ * @author Danilo Correa <danilosilva87@gmail.com>
+ * @author Gabriel Caruso <carusogabriel34@gmail.com>
+ * @author Henrique Moody <henriquemoody@gmail.com>
  */
-class NumericValTest extends TestCase
+final class NumericValTest extends RuleTestCase
 {
-    protected $object;
-
-    protected function setUp(): void
-    {
-        $this->object = new NumericVal();
-    }
-
     /**
-     * @dataProvider providerForNumeric
+     * {@inheritdoc}
      */
-    public function testNumeric($input): void
+    public function providerForValidInput(): array
     {
-        self::assertTrue($this->object->__invoke($input));
-        $this->object->check($input);
-        $this->object->assert($input);
-    }
+        $numericVal = new NumericVal();
 
-    /**
-     * @dataProvider providerForNotNumeric
-     * @expectedException \Respect\Validation\Exceptions\NumericValException
-     */
-    public function testNotNumeric($input): void
-    {
-        self::assertFalse($this->object->__invoke($input));
-        $this->object->assert($input);
-    }
-
-    public function providerForNumeric()
-    {
         return [
-            [165],
-            [165.0],
-            [-165],
-            ['165'],
-            ['165.0'],
-            ['+165.0'],
+            [$numericVal, 164],
+            [$numericVal, 165.0],
+            [$numericVal, -165],
+            [$numericVal, '165'],
+            [$numericVal, '165.0'],
+            [$numericVal, '+165.0'],
         ];
     }
 
-    public function providerForNotNumeric()
+    /**
+     * {@inheritdoc}
+     */
+    public function providerForInvalidInput(): array
     {
+        $numericVal = new NumericVal();
+
         return [
-            [''],
-            [null],
-            ['a'],
-            [' '],
-            ['Foo'],
+            [$numericVal, ''],
+            [$numericVal, null],
+            [$numericVal, 'a'],
+            [$numericVal, ' '],
+            [$numericVal, 'Foo'],
         ];
     }
 }

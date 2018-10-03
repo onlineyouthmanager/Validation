@@ -14,11 +14,12 @@ declare(strict_types=1);
 namespace Respect\Validation;
 
 use finfo;
-use ReflectionClass;
 use Respect\Validation\Exceptions\ComponentException;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\Key;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @method static Validator allOf(Validatable ...$rule)
@@ -26,18 +27,18 @@ use Respect\Validation\Rules\Key;
  * @method static Validator alpha(string $additionalChars = null)
  * @method static Validator alwaysInvalid()
  * @method static Validator alwaysValid()
- * @method static Validator anyOf()
+ * @method static Validator anyOf(Validatable ...$rule)
  * @method static Validator arrayType()
  * @method static Validator arrayVal()
  * @method static Validator attribute(string $reference, Validatable $validator = null, bool $mandatory = true)
- * @method static Validator base()
+ * @method static Validator base(int $base, string $chars = null)
  * @method static Validator base64()
  * @method static Validator between($minimum, $maximum)
  * @method static Validator bic(string $countryCode)
  * @method static Validator boolType()
  * @method static Validator boolVal()
  * @method static Validator bsn()
- * @method static Validator call()
+ * @method static Validator call(callable $callable, Validatable $rule)
  * @method static Validator callableType()
  * @method static Validator callback(callable $callback)
  * @method static Validator charset(string ...$charset)
@@ -85,13 +86,14 @@ use Respect\Validation\Rules\Key;
  * @method static Validator intVal()
  * @method static Validator intType()
  * @method static Validator ip($ipOptions = null)
+ * @method static Validator isbn()
  * @method static Validator iterableType()
  * @method static Validator json()
  * @method static Validator key(string $reference, Validatable $referenceValidator = null, bool $mandatory = true)
  * @method static Validator keyNested(string $reference, Validatable $referenceValidator = null, bool $mandatory = true)
  * @method static Validator keySet(Key ...$rule)
  * @method static Validator keyValue(string $comparedKey, string $ruleName, string $baseKey)
- * @method static Validator languageCode(string $set)
+ * @method static Validator languageCode(string $set = null)
  * @method static Validator leapDate(string $format)
  * @method static Validator leapYear()
  * @method static Validator length(int $min = null, int $max = null, bool $inclusive = true)
@@ -137,7 +139,7 @@ use Respect\Validation\Rules\Key;
  * @method static Validator resourceType()
  * @method static Validator roman()
  * @method static Validator scalarVal()
- * @method static Validator sf(string $name, array $params = null)
+ * @method static Validator sf(Constraint $constraint, ValidatorInterface $validator = null)
  * @method static Validator size(string $minSize = null, string $maxSize = null)
  * @method static Validator slug()
  * @method static Validator space(string $additionalChars = null)
@@ -166,8 +168,11 @@ use Respect\Validation\Rules\Key;
  * @method static Validator yes($useLocale = false)
  * @method static Validator zend($validator, array $params = null)
  */
-class Validator extends AllOf
+final class Validator extends AllOf
 {
+    /**
+     * {@inheritdoc}
+     */
     public function check($input): void
     {
         try {
@@ -182,46 +187,33 @@ class Validator extends AllOf
     }
 
     /**
-     * @param string $ruleName
-     * @param array  $arguments
+     * Creates a new Validator instance with a rule that was called on the static method.
      *
-     * @return Validator
-     */
-    public static function __callStatic($ruleName, $arguments)
-    {
-        if ('allOf' === $ruleName) {
-            return static::buildRule($ruleName, $arguments);
-        }
-
-        $validator = new static();
-
-        return $validator->__call($ruleName, $arguments);
-    }
-
-    /**
-     * @param mixed $ruleSpec
+     * @param string $ruleName
      * @param array $arguments
      *
-     * @return Validatable
-     */
-    public static function buildRule($ruleSpec, $arguments = [])
-    {
-        try {
-            return Factory::getDefaultInstance()->rule($ruleSpec, $arguments);
-        } catch (\Exception $exception) {
-            throw new ComponentException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-    }
-
-    /**
-     * @param string $method
-     * @param array  $arguments
+     * @throws ComponentException
      *
      * @return self
      */
-    public function __call($method, $arguments)
+    public static function __callStatic(string $ruleName, array $arguments): self
     {
-        return $this->addRule(static::buildRule($method, $arguments));
+        return self::create()->__call($ruleName, $arguments);
+    }
+
+    /**
+     * Create a new rule by the name of the method and adds the rule to the chain.
+     *
+     * @param string $ruleName
+     * @param array $arguments
+     *
+     * @throws ComponentException
+     *
+     * @return self
+     */
+    public function __call(string $ruleName, array $arguments): self
+    {
+        return $this->addRule(Factory::getDefaultInstance()->rule($ruleName, $arguments));
     }
 
     /**
@@ -229,10 +221,8 @@ class Validator extends AllOf
      *
      * @return Validator
      */
-    public static function create()
+    public static function create(): self
     {
-        $ref = new ReflectionClass(__CLASS__);
-
-        return $ref->newInstanceArgs(func_get_args());
+        return new self();
     }
 }

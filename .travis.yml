@@ -20,6 +20,9 @@ matrix:
   fast_finish: true
 
 before_script:
+  - sudo locale-gen --no-purge --lang nl_NL.UTF-8
+  - sudo locale-gen --no-purge --lang pt_BR.UTF-8
+  - sudo locale-gen --no-purge --lang ru_RU.UTF-8
   - pecl install uopz || echo "Cound not install uopz" 1>&2
   - composer update --prefer-dist ${COMPOSER_ARGUMENTS}
 
@@ -32,6 +35,10 @@ script:
   - |
     if [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
       vendor/bin/php-cs-fixer --diff --dry-run --verbose fix
+    fi
+  - |
+    if [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
+      vendor/bin/phpstan analyze
     fi
 
 after_script:

@@ -23,8 +23,6 @@ THE SOFTWARE.
 ***
 See also:
 
+- [README](README.md)
 - [Contributing](CONTRIBUTING.md)
-- [Feature Guide](docs/README.md)
-- [Installation](docs/INSTALL.md)
-- [Validators](docs/VALIDATORS.md)
 - [Changelog](CHANGELOG.md)

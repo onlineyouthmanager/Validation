@@ -17,6 +17,9 @@ use DirectoryIterator;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+/**
+ * @coversNothing
+ */
 class CheckExceptionsTest extends TestCase
 {
     protected $deprecateds = [];
@@ -52,8 +55,10 @@ class CheckExceptionsTest extends TestCase
 
     /**
      * @dataProvider provideListOfRuleNames
+     *
+     * @test
      */
-    public function testRuleHasAnExceptionWhichHasValidApi($ruleName): void
+    public function ruleHasAnExceptionWhichHasValidApi($ruleName): void
     {
         $exceptionClass = 'Respect\\Validation\\Exceptions\\'.$ruleName.'Exception';
         self::assertTrue(

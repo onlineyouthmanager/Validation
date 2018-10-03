@@ -21,6 +21,7 @@ use Respect\Validation\Test\Stubs\CountableStub;
 /**
  * @group rule
  *
+ * @covers \Respect\Validation\Rules\AbstractComparison
  * @covers \Respect\Validation\Rules\Min
  *
  * @author Alexandre Gomes Gaigalas <alexandre@gaigalas.net>
@@ -79,6 +80,8 @@ final class MinTest extends RuleTestCase
             [new Min(0), -250],
             [new Min(0), -50],
             [new Min(new CountableStub(1)), 0],
+            [new Min(2040), '2018-01-25'],
+            [new Min(10.5), '2018-01-25'],
         ];
     }
 }
